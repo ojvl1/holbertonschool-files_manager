@@ -12,7 +12,7 @@ class RedisClient {
   }
 
   isAlive() {
-    return this.client.isOpen;
+    return this.client && this.client.isReady ? true : false;
   }
 
   async get(key) {
@@ -20,7 +20,7 @@ class RedisClient {
       return await this.client.get(key);
     } catch (err) {
       console.error("Error getting value frm Redis:", err);
-      return false;
+      return null;
     }
   }
 
