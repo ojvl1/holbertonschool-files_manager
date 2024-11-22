@@ -20,7 +20,7 @@ class RedisClient {
       return await this.client.get(key);
     } catch (err) {
       console.error("Error getting value frm Redis:", err);
-      return null;
+      return false;
     }
   }
 
