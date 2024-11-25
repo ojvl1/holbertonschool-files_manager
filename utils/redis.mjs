@@ -2,13 +2,26 @@ import { createClient } from "redis";
 
 class RedisClient {
   constructor() {
-    this.client = createClient;
-    this.client.on("error", (err) => {
-      console.error("Redis client error:", err);
-    });
-    this.client.connect().catch((err) => {
-      console.error("Error connecting to Redis:", err);
-    });
+    console.log("Initializing Redis client...");
+    try {
+      this.client = createClient();
+      console.log("Redis client initialized successfully.");
+
+      this.client.on("error", (err) => {
+        console.error("Redis client error:", err);
+      });
+
+      this.client
+        .connect()
+        .then(() => {
+          console.log("Redis client connected.");
+        })
+        .catch((err) => {
+          console.error("Error connecting to Redis:", err);
+        });
+    } catch (err) {
+      console.error("Error during Redis client initialization:", err);
+    }
   }
 
   isAlive() {
