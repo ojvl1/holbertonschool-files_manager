@@ -2,49 +2,36 @@ import { createClient } from "redis";
 
 class RedisClient {
   constructor() {
-    console.log("Initializing Redis client...");
-    try {
-      this.client = createClient({
-        url: "redis://localhost:6379",
-      });
+    this.client = createClient();
 
-      this.client.on("error", (err) => {
-        console.error("Redis client error:", err);
-      });
+    this.client.on("error", (err) => {
+      console.error("Redis Client Error", err);
+    });
 
-      this.connect();
-    } catch (err) {
-      console.error("Error during Redis client initialization:", err);
-    }
-  }
-
-  async connect() {
-    try {
-      await this.client.connect();
-      console.log("Redis client connected.");
-    } catch (err) {
-      console.error("Error connecting to Redis:", err);
-    }
+    this.client.connect().catch(console.error);
   }
 
   isAlive() {
-    return this.client && this.client.isOpen;
+    return this.client.isOpen;
   }
 
   async get(key) {
     try {
-      return await this.client.get(key);
+      const value = await this.client.get(key);
+      return value;
     } catch (err) {
-      console.error("Error getting value from Redis:", err);
+      console.error("Error getting key", err);
       return null;
     }
   }
 
   async set(key, value, duration) {
     try {
-      await this.client.set(key, value, { EX: duration });
+      await this.client.set(key, value.toString(), {
+        EX: duration,
+      });
     } catch (err) {
-      console.error("Error setting value in Redis:", err);
+      console.error("Error setting key", err);
     }
   }
 
@@ -52,7 +39,7 @@ class RedisClient {
     try {
       await this.client.del(key);
     } catch (err) {
-      console.error("Error deleting key from Redis:", err);
+      console.error("Error deleting key", err);
     }
   }
 }
