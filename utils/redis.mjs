@@ -4,35 +4,38 @@ class RedisClient {
   constructor() {
     console.log("Initializing Redis client...");
     try {
-      this.client = createClient();
-      console.log("Redis client initialized successfully.");
+      this.client = createClient({
+        url: "redis://localhost:6379",
+      });
 
       this.client.on("error", (err) => {
         console.error("Redis client error:", err);
       });
 
-      this.client
-        .connect()
-        .then(() => {
-          console.log("Redis client connected.");
-        })
-        .catch((err) => {
-          console.error("Error connecting to Redis:", err);
-        });
+      this.connect();
     } catch (err) {
       console.error("Error during Redis client initialization:", err);
     }
   }
 
+  async connect() {
+    try {
+      await this.client.connect();
+      console.log("Redis client connected.");
+    } catch (err) {
+      console.error("Error connecting to Redis:", err);
+    }
+  }
+
   isAlive() {
-    return this.client && this.client.isReady ? true : false;
+    return this.client && this.client.isOpen;
   }
 
   async get(key) {
     try {
       return await this.client.get(key);
     } catch (err) {
-      console.error("Error getting value frm Redis:", err);
+      console.error("Error getting value from Redis:", err);
       return null;
     }
   }
